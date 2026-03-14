@@ -1,0 +1,29 @@
+name: TeriStrategy Daily Report
+
+on:
+  schedule:
+    - cron: '0 14 * * 1-5'   # 9am Eastern (UTC-5) Mon-Fri
+  workflow_dispatch:           # allows manual "Run workflow" button for testing
+
+jobs:
+  run-report:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run TeriStrategy report
+        env:
+          EMAIL_SENDER:   ${{ secrets.EMAIL_SENDER }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          EMAIL_RECEIVER: ${{ secrets.EMAIL_RECEIVER }}
+        run: python report.py
